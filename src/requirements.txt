@@ -1,0 +1,4 @@
+requests==2.31.0
+beautifulsoup4==4.12.3
+thefuzz==0.22.1
+torrentp==0.1.7
