@@ -1,18 +1,35 @@
 from scraper.scraper import Scraper
 import re
 
-BASE_URL = "https://thepiratebay10.info/search/"
-SEEDERS_FIRST = "1/7/0"
+BASE_URL = "https://thepiratebay10.info/search"
+SEEDERS_FIRST_PARAM = "1/7/0"
+QUALITY_CRITERIA = "bluray"
+
 
 class PirateManager:
-
-    def __init__(self, movie) -> None:
-       pass
-
     
     def build_search_terms(self, movie_title):
         split_title = movie_title.split(" ")
-        return "20%".join(split_title) if len(split_title) > 1 else split_title[0]
+        split_title.append(QUALITY_CRITERIA)
+        search_param = "%20".join(split_title)
+        return f"{search_param}/{SEEDERS_FIRST_PARAM}"
+    
+    def search_for_movie(self, movie_title):
+        scraper = Scraper(
+            f"{BASE_URL}/{self.build_search_terms(movie_title)}"
+        )
+        results_table = scraper.get_single_element(
+            "table", "searchResult"
+        )
+        return self.get_torrent_info(results_table)
+    
+    def get_movie_size_in_megabytes(self, size_type, size):
+        size_type = size_type.lower()
+        if size_type == "gib":
+            return size * 1000
+        if size_type == "kib":
+            return size / 1000
+        return size_type
     
 
     def get_torrent_info(self, table):
@@ -28,3 +45,17 @@ class PirateManager:
                 })
 
         return res
+    
+    def sort_torrent(self, torrent):
+        # todo - fix this below
+        (torrent_size, size_type) =  torrent.get("size")[0]
+        seeders = int(torrent.get("seeders"))
+        size_in_megabytes = self.get_movie_size_in_megabytes(
+            size_type, float(torrent_size)
+        )
+        return (seeders, size_in_megabytes)
+
+    
+    
+    def sort_torrents(self, torrents_info):
+        return sorted(torrents_info, key=self.sort_torrent, reverse=True)
