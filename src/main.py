@@ -1,4 +1,7 @@
 from scraper.scraper import Scraper
+from fuzzy_manager.fuzzy_manager import FuzzyMatch
+from pirate_manager import PirateManager
+from torrent_downloader.downloader import Downloader
 
 url = "https://letterboxd.com/moonclash/watchlist/"
 
@@ -19,4 +22,19 @@ for movie in movies_in_watchlist:
         )
     )
 
-print(film_names)
+pirate = PirateManager()
+
+import asyncio
+torrents = [
+    pirate.get_torrents(film_name)[0].get("magnet_url")
+    for film_name in film_names
+    if pirate.get_torrents(film_name)
+]
+
+downloader = Downloader()
+
+for torrent in torrents:
+    asyncio.run(downloader.download_torrent(torrent, "."))
+    
+
+

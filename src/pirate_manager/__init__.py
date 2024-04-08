@@ -46,16 +46,17 @@ class PirateManager:
 
         return res
     
-    def sort_torrent(self, torrent):
-        # todo - fix this below
+    def sort_torrents(self, torrent):
         (torrent_size, size_type) =  torrent.get("size")[0]
         seeders = int(torrent.get("seeders"))
         size_in_megabytes = self.get_movie_size_in_megabytes(
             size_type, float(torrent_size)
         )
         return (seeders, size_in_megabytes)
-
     
+    def sort_torrent(self, torrents_info):
+        return sorted(torrents_info, key=self.sort_torrents, reverse=True)
     
-    def sort_torrents(self, torrents_info):
-        return sorted(torrents_info, key=self.sort_torrent, reverse=True)
+    def get_torrents(self, movie_title):
+        torrents_found = self.search_for_movie(movie_title)
+        return torrents_found
