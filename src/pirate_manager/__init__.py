@@ -4,6 +4,7 @@ import re
 BASE_URL = "https://thepiratebay10.info/search"
 SEEDERS_FIRST_PARAM = "1/7/0"
 QUALITY_CRITERIA = "bluray"
+SIZE_REGEX = r'(\d+\.\d+|\d+)(\s*(?:GiB|MiB|KiB))'
 
 
 class PirateManager:
@@ -33,18 +34,22 @@ class PirateManager:
     
 
     def get_torrent_info(self, table):
-        res = []
+        result_objects = []
         for row in table.find_all("tr"):
             cols = row.find_all("td")
             if len(cols) >= 5:
-                res.append({
+                result_objects.append({
                     "name": cols[1].text.strip(),
                     "magnet_url": cols[3].find("nobr").find("a").get("href"),
-                    "size": [(value.strip(), unit.strip()) for value, unit in re.findall(r'(\d+\.\d+|\d+)(\s*(?:GiB|MiB|KiB))', cols[4].text.strip(), re.IGNORECASE)],
+                    "size": [
+                            (value.strip(), unit.strip()) 
+                            for value, unit in 
+                            re.findall(SIZE_REGEX, cols[4].text.strip(), re.IGNORECASE)
+                        ],
                     "seeders": cols[5].text.strip()
                 })
 
-        return res
+        return result_objects
     
     def sort_torrents(self, torrent):
         (torrent_size, size_type) =  torrent.get("size")[0]
@@ -54,9 +59,9 @@ class PirateManager:
         )
         return (seeders, size_in_megabytes)
     
-    def sort_torrent(self, torrents_info):
+    def sort_torrents_by_seeders(self, torrents_info):
         return sorted(torrents_info, key=self.sort_torrents, reverse=True)
     
     def get_torrents(self, movie_title):
         torrents_found = self.search_for_movie(movie_title)
-        return torrents_found
+        return self.sort_torrents_by_seeders(torrents_found)

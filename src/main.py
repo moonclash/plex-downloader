@@ -1,5 +1,4 @@
 from scraper.scraper import Scraper
-from fuzzy_manager.fuzzy_manager import FuzzyMatch
 from pirate_manager import PirateManager
 from torrent_downloader.downloader import Downloader
 
