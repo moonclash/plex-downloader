@@ -25,6 +25,8 @@ class PirateManager:
         return self.get_torrent_info(results_table)
     
     def get_movie_size_in_megabytes(self, size_type, size):
+        if type(size) not in (int, float):
+            return 0
         size_type = size_type.lower()
         if size_type == "gib":
             return size * 1000
@@ -57,6 +59,7 @@ class PirateManager:
         size_in_megabytes = self.get_movie_size_in_megabytes(
             size_type, float(torrent_size)
         )
+        print(seeders, size_in_megabytes)
         return (seeders, size_in_megabytes)
     
     def sort_torrents_by_seeders(self, torrents_info):
