@@ -32,8 +32,10 @@ torrents = [
 
 downloader = Downloader()
 
+download_directory = "/downloads"
+
 for torrent in torrents:
-    asyncio.run(downloader.download_torrent(torrent, "."))
+    asyncio.run(downloader.download_torrent(torrent, download_directory))
     
 
 

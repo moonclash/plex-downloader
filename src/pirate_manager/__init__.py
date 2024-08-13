@@ -32,7 +32,7 @@ class PirateManager:
             return size * 1000
         if size_type == "kib":
             return size / 1000
-        return size_type
+        return size
     
 
     def get_torrent_info(self, table):
@@ -55,11 +55,11 @@ class PirateManager:
     
     def sort_torrents(self, torrent):
         (torrent_size, size_type) =  torrent.get("size")[0]
+        print(torrent_size, size_type)
         seeders = int(torrent.get("seeders"))
         size_in_megabytes = self.get_movie_size_in_megabytes(
             size_type, float(torrent_size)
         )
-        print(seeders, size_in_megabytes)
         return (seeders, size_in_megabytes)
     
     def sort_torrents_by_seeders(self, torrents_info):
