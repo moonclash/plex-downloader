@@ -11,5 +11,3 @@ class FuzzyMatch:
     def is_phrase_in_list(self, phrase, list_):
         ratios = [self.get_phrase_ratio(phrase, list_phrase) for list_phrase in list_]
         return any([ratio >= 30 for ratio in ratios])
-    
-    
